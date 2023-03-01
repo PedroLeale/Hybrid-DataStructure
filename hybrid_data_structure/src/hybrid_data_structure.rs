@@ -58,6 +58,15 @@ impl <'a> Hybrid <'a> {
         return self.set.symmetric_difference(&other.set);
     }
 
+    pub fn intersection(&self, other: &'a Hybrid) -> std::collections::btree_set::Intersection<'_, &str> {
+        return self.set.intersection(&other.set);
+    }
+
+    pub fn union(&self, other: &'a Hybrid) -> std::collections::btree_set::Union<'_, &str> {
+        //Work this one out to make it smarter
+        return self.set.union(&other.set);
+    }
+
     pub fn len(&self) -> usize {
         self.set.len()
     }
