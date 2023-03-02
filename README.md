@@ -1,2 +1,2 @@
 # Hybrid-DataStructure
-A hybrid data structure focused for bitcoin forensic
+A hybrid data structure to store Strings and &str, expected to be used for Heuristics for Bitcoin Forensics
