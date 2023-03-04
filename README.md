@@ -7,7 +7,7 @@ Eventually this project will become a external crate at crates.io to be used ope
 
 It is a hybrid data structure that contains a BtreeSet and a BloomFilter.
 The BloomFilter's goal is to optimize "contains" methods without compromising insertions.<br />
-The current code compiles and can be used, but is still on the optimization process.<br />
+The current code is still on the optimization process.<br />
 
 ## Future updates:
 To further optimize unions I am working on a way to store a list of the hybrid data structure, so in the case of an union of two big sets, a push
