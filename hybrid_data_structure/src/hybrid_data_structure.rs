@@ -8,9 +8,9 @@ pub struct Hybrid <'a> {
 }
 
 impl <'a> Hybrid <'a> {
-    pub fn new(items_count: usize) -> Hybrid <'a> {
+    pub fn new(items_count: usize, fp_rate: f64) -> Hybrid <'a> {
         Hybrid {
-            bloom: Bloom::new_for_fp_rate(items_count, 0.01),
+            bloom: Bloom::new_for_fp_rate(items_count, fp_rate),
             set: BTreeSet::new(),
         }
     }
