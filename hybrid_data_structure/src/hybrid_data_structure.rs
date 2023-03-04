@@ -67,6 +67,22 @@ impl <'a> Hybrid <'a> {
         return self.set.union(&other.set);
     }
 
+    pub fn hybrid_union(&'a mut self, other: &'a mut Hybrid<'a>) -> &Hybrid {
+        if self.len() < other.len() {
+            let new_hybrid = other;
+            for item in self.iter() {
+                new_hybrid.insert(item);
+            }
+            return new_hybrid;
+        } else {
+            let new_hybrid = self;
+            for item in other.iter() {
+                new_hybrid.insert(item);
+            }
+            return new_hybrid;
+        }
+    }
+
     pub fn len(&self) -> usize {
         self.set.len()
     }
