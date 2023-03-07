@@ -1,7 +1,8 @@
 # Hybrid-DataStructure
 A hybrid data structure to store Strings, expected to be used for Heuristics for Bitcoin Forensics.<br />
 Currently focusing on Heuristic H1, wich checks for same input addresses in different transactions, it makes heavy use of intersection and union functions.<br />
-Eventually this project will become a external crate at crates.io to be used openly.
+Eventually this project will become a external crate at crates.io to be used openly.<br />
+This project is also part of my scientific initiation at UFU (Federal university of Uberlândia - Brazil).<br />
 
 ## Details about the project
 

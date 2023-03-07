@@ -1,3 +1,6 @@
+//Authors: Pedro Leale
+//         Dr. Ivan da Silva Sendin
+
 use bloomfilter::Bloom; // bloomfilter = "1.0.9"
 use std::collections::BTreeSet;
 struct HybridBase<'a> {
