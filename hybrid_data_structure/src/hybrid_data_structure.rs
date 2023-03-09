@@ -94,6 +94,25 @@ impl <'a> Hybrid <'a>{
         true
     }
 
+    //Implement intersection, that returns an chained iterator (using methods like flatmap) of all intersections from every base
+    pub fn intersection(&'a self, other: &'a Hybrid) -> impl Iterator<Item = &'a &'a str> + '_ {
+        self.base
+            .iter()
+            .flat_map(move |base| base.set.iter().filter(move |s| other.contains(*s)))
+    }
+
+
+    //I am still testing, between intersection_boolean and has_intersection
+    //wich is faster, for my benchmarks intersection_boolean is faster, but I need further testing to prove it
+
+    pub fn intersection_boolean(&'a self, other: &'a Hybrid) -> bool {
+        //Returns true if an intersection exists, false if not
+        if self.intersection(other).next().is_some() {
+            return true;
+        }
+        false
+    }
+
     pub fn has_intersection(&'a self, other: &'a Hybrid) -> bool {
         //Returns true if an intersection exists, false if not
         for item in self.get_iter() {
