@@ -11,9 +11,9 @@ The BloomFilter's goal is to optimize "contains" methods without compromising in
 The current code is still on the optimization process but is relatively fast.<br />
 
 ## For the future updates:
-* Make a better way of concatenating the iterators, because of borrowing issues, otherwise from my testings it works;<br />
-* Make a function that returns iterators with the intersection itself, for the heuristics just a boolean value is enough, but I want it to make this structure more useful for other cases;<br />
-* Find a way that deals with duplicates from Unions without a big impact on performance;<br />
+* Make a better way of concatenating the iterators, because of borrowing issues, otherwise from my testings it works.<br />
+* Make a function that returns iterators with the intersection itself, for the heuristics just a boolean value is enough, but I want it to make this structure more useful for other cases.<br />
+* Find a way that deals with duplicates from Unions without a big impact on performance.<br />
 * I also want to test other Tree sets so the user can choose the best solution for the case.
 
 
