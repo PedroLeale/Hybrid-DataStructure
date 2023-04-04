@@ -5,6 +5,8 @@ use bloomfilter::Bloom; // bloomfilter = "1.0.9"
 use std::collections::BTreeSet;
 struct HybridBase<'a> {
     bloom: Bloom<str>,
+    bloom_size: usize,
+    bloom_fp_rate: f64,
     set: BTreeSet<&'a str>,
 }
 
@@ -17,23 +19,32 @@ impl <'a> Hybrid <'a>{
         Hybrid {
             base: vec![HybridBase {
                 bloom: Bloom::new_for_fp_rate(items_count, fp_rate),
+                bloom_size: items_count,
+                bloom_fp_rate: fp_rate,
                 set: BTreeSet::new(),
-            }],
+            }]
         }
     }
 
     pub fn insert(&mut self, item: &'a str) {
         //Always insert on the last one
-        //Can be changed later
-        self.base.last_mut().unwrap().bloom.set(item);
+        if self.base.last().unwrap().bloom_size == self.base.last().unwrap().set.len() {
+            //If the last one is full, create a new one
+            self.base.push(HybridBase {
+                bloom: Bloom::new_for_fp_rate(self.base.last().unwrap().bloom_size, self.base.last().unwrap().bloom_fp_rate),
+                bloom_size: self.base.last().unwrap().bloom_size,
+                bloom_fp_rate: self.base.last().unwrap().bloom_fp_rate,
+                set: BTreeSet::new(),
+            });
+        }
         self.base.last_mut().unwrap().set.insert(item);
+        self.base.last_mut().unwrap().bloom.set(&item);
     }
 
     pub fn contains(&self, item: &'a str) -> bool {
-        //Start checking from last to first, because most insertions happens on the last position
-        //Will only impact if a union has occurred 
-        for base in self.base.iter().rev() { 
-            if base.bloom.check(item) {
+        //Start checking from first to last, because the first ones should have more items
+        for base in self.base.iter() { 
+            if base.bloom.check(&item) {
                 return base.set.contains(item);
             }
         }

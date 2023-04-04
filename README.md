@@ -11,8 +11,13 @@ The BloomFilter's goal is to optimize "contains" methods without compromising in
 The current code is still on the optimization process but is relatively fast.<br />
 
 ## For the future updates:
-<del> To further optimize unions I am working on a way to store a list of the hybrid data structure, so in the case of an union of two big sets, a push
-to the end of the list can solve it. My current problem with this solution is to make iterators work properly. </del> --- DONE <br />
-Make a better way of concatenating the iterators, because of borrowing issues, otherwise from my testings it works.<br />
-Make a function that returns iterators with the intersection itself, for the heuristics just a boolean value is enough, but I want it to make this structure more useful for other cases.<br />
-I also want to test other Tree sets so the user can choose the best solution for the case.
+* Make a better way of concatenating the iterators, because of borrowing issues, otherwise from my testings it works;<br />
+* Make a function that returns iterators with the intersection itself, for the heuristics just a boolean value is enough, but I want it to make this structure more useful for other cases;<br />
+* Find a way that deals with duplicates from Unions without a big impact on performance;<br />
+* I also want to test other Tree sets so the user can choose the best solution for the case.
+
+
+## Things I have already tried
+* I tried to make it generic, not only for strings, but I don't know why it lost 40% performance since typing should be dealt with in compile time, not run time.<br />
+* Also tried to make only one TreeSet and a list of BloomFilters, but it ended up consuming so much memory that it crashes when I test it with millions of strings.
+The goal of this was to deal with duplicates from unions.
