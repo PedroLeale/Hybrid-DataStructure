@@ -9,11 +9,15 @@ This project is also part of my scientific initiation at UFU (Federal university
 It is a hybrid data structure that contains a BtreeSet and a BloomFilter.
 The BloomFilter's goal is to optimize "contains" methods without compromising insertions.<br />
 The current code is still on the optimization process but is relatively fast.<br />
+Run benchmarks with "cargo bench" on the project folder.
+
+## Union functions
+Last version's union function just pushed the other data structure to the end of the list, this thing was causing some mutability and lifetime problems, it is possible to circle around it but for this new version I've changed the insertion function so it checks for duplicates and union basically inserts other into self. I did this to avoid this
+mutability and lifetimes issues until I discover how to properly deal with it.<br />
 
 ## For the future updates:
 * Make a better way of concatenating the iterators, because of borrowing issues, otherwise from my testings it works.<br />
 * Make a function that returns iterators with the intersection itself, for the heuristics just a boolean value is enough, but I want it to make this structure more useful for other cases.<br />
-* Find a way that deals with duplicates from Unions without a big impact on performance.<br />
 * I also want to test other Tree sets so the user can choose the best solution for the case.
 
 

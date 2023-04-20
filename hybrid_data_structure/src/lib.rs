@@ -27,6 +27,9 @@ impl <'a> Hybrid <'a>{
     }
 
     pub fn insert(&mut self, item: &'a str) {
+        if self.contains(item) {
+            return;
+        }
         //Always insert on the last one
         if self.base.last().unwrap().bloom_size == self.base.last().unwrap().set.len() {
             //If the last one is full, create a new one
@@ -112,18 +115,6 @@ impl <'a> Hybrid <'a>{
             .flat_map(move |base| base.set.iter().filter(move |s| other.contains(*s)))
     }
 
-
-    //I am still testing, between intersection_boolean and has_intersection
-    //wich is faster, for my benchmarks intersection_boolean is faster, but I need further testing to prove it
-
-    pub fn intersection_boolean(&'a self, other: &'a Hybrid) -> bool {
-        //Returns true if an intersection exists, false if not
-        if self.intersection(other).next().is_some() {
-            return true;
-        }
-        false
-    }
-
     pub fn has_intersection(&'a self, other: &'a Hybrid) -> bool {
         //Returns true if an intersection exists, false if not
         for item in self.get_iter() {
@@ -134,29 +125,14 @@ impl <'a> Hybrid <'a>{
         false
     }
 
-    pub fn union(&mut self, other: &'a mut Hybrid<'a>) -> &mut Hybrid<'a> {
-        //Makes "other" part of "self", if other is empty, nothing happens
-        //If other's length is too small, it will be inserted in a loop
-        //Else everything will be pushed to the list.
-        //"too small" will be altered after more benchmarking.
+    pub fn union(&mut self, other: &'a Hybrid<'a>) -> &mut Hybrid<'a> {
         if other.is_empty() {
             return self;
         }
-        if other.len() <= 1000 {
-            for item in other.get_iter() {
-                self.insert(item);
-            }
-            return self;
+        for item in other.get_iter() {
+            self.insert(item);
         }
-        loop {
-            let safe_check = other.base.pop();
-            if let Some(_) = safe_check {
-                self.base.push(safe_check.unwrap());
-            } else {
-                break;
-            }
-        }
-        self
+        return self;
     }
 
     pub fn len(&self) -> usize {
