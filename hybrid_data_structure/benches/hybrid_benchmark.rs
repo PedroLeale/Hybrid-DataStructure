@@ -79,8 +79,39 @@ fn union_benchmark(c: &mut Criterion) {
     }));
 }
 
+fn heavy_union_benchmark(c: &mut Criterion) {
+    //Same as union_benchmark but with way more data
+    //May take some minutes if you run it with "address_amount" equal to millions
+    //because it samples 100x times
+    let address_amount = 100000;
+    let addresses = create_addresses(address_amount, 1);
+    let mut hybrid = Hybrid::new(address_amount, 0.01);
+    for address in &addresses {
+        hybrid.insert(address);
+    }
 
-criterion_group!(benches, insertion_benchmark, contains_benchmark, has_intersection_benchmark, union_benchmark);
+    let mut hybrid_array = black_box(Vec::<Hybrid>::new());
+    let mut address_array = Vec::<Vec<String>>::new();
+    for i in 0..5 {
+        address_array.push(create_addresses(address_amount, i as u64));
+    }
+    for i in 0..address_array.len() {
+        let mut hybrid = Hybrid::new(address_amount, 0.01);
+        for address in &address_array[i] {
+            hybrid.insert(address);
+        }
+        hybrid_array.push(hybrid);
+    }
+
+    c.bench_function("Heavy Hybrid union", |b| b.iter(|| {
+        for i in &hybrid_array {
+            hybrid.union(&i);
+        }
+    }));
+}
+
+
+criterion_group!(benches, insertion_benchmark, contains_benchmark, has_intersection_benchmark, union_benchmark, heavy_union_benchmark);
 criterion_main!(benches);
 
 
