@@ -18,7 +18,7 @@ impl <'a> Hybrid <'a>{
     pub fn new(items_count: usize, fp_rate: f64) -> Hybrid <'a> {
         Hybrid {
             base: vec![HybridBase {
-                bloom: Bloom::new_for_fp_rate(items_count, fp_rate),
+                bloom: Bloom::new_for_fp_rate_with_seed(items_count, fp_rate, &[0u8;32]),
                 bloom_size: items_count,
                 bloom_fp_rate: fp_rate,
                 set: BTreeSet::new(),
@@ -34,7 +34,7 @@ impl <'a> Hybrid <'a>{
         if self.base.last().unwrap().bloom_size == self.base.last().unwrap().set.len() {
             //If the last one is full, create a new one
             self.base.push(HybridBase {
-                bloom: Bloom::new_for_fp_rate(self.base.last().unwrap().bloom_size, self.base.last().unwrap().bloom_fp_rate),
+                bloom: Bloom::new_for_fp_rate_with_seed(self.base.last().unwrap().bloom_size, self.base.last().unwrap().bloom_fp_rate, &[0u8;32]),
                 bloom_size: self.base.last().unwrap().bloom_size,
                 bloom_fp_rate: self.base.last().unwrap().bloom_fp_rate,
                 set: BTreeSet::new(),
@@ -74,7 +74,12 @@ impl <'a> Hybrid <'a>{
     }
 
     pub fn is_empty(&self) -> bool {
-        self.base.is_empty()
+        for i in self.base.iter() {
+            if !i.set.is_empty() {
+                return false;
+            }
+        }
+        true
     }
 
     //Optimize is_subset, is_superset and is_disjoint
