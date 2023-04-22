@@ -41,13 +41,13 @@ impl <'a> Hybrid <'a>{
             });
         }
         self.base.last_mut().unwrap().set.insert(item);
-        self.base.last_mut().unwrap().bloom.set(&item);
+        self.base.last_mut().unwrap().bloom.set(item);
     }
 
     pub fn contains(&self, item: &'a str) -> bool {
         //Start checking from first to last, because the first ones should have more items
         for base in self.base.iter() { 
-            if base.bloom.check(&item) {
+            if base.bloom.check(item) {
                 return base.set.contains(item);
             }
         }
@@ -56,7 +56,7 @@ impl <'a> Hybrid <'a>{
 
     pub fn get_item(&self, item: &'a str) -> Option<&'a str> {
         for base in self.base.iter().rev(){
-            if base.bloom.check(&item) {
+            if base.bloom.check(item) {
                 return base.set.get(item).copied();
             }
         }
@@ -70,7 +70,7 @@ impl <'a> Hybrid <'a>{
     }
 
     pub fn get_iter(&self) -> impl Iterator<Item = &str> + '_ {
-        self.base.iter().flat_map(|base| base.set.iter().map(|s| *s))
+        self.base.iter().flat_map(|base| base.set.iter().copied())
     }
 
     pub fn is_empty(&self) -> bool {
@@ -117,7 +117,7 @@ impl <'a> Hybrid <'a>{
     pub fn intersection(&'a self, other: &'a Hybrid) -> impl Iterator<Item = &'a &'a str> + '_ {
         self.base
             .iter()
-            .flat_map(move |base| base.set.iter().filter(move |s| other.contains(*s)))
+            .flat_map(move |base| base.set.iter().filter(move |s| other.contains(s)))
     }
 
     pub fn has_intersection(&'a self, other: &'a Hybrid) -> bool {
@@ -137,7 +137,7 @@ impl <'a> Hybrid <'a>{
         for item in other.get_iter() {
             self.insert(item);
         }
-        return self;
+        self
     }
 
     pub fn len(&self) -> usize {
