@@ -10,19 +10,19 @@ struct HybridBase<'a> {
     set: BTreeSet<&'a str>,
 }
 
-pub struct Hybrid <'a>  {
+pub struct Hybrid<'a> {
     base: Vec<HybridBase<'a>>,
 }
 
-impl <'a> Hybrid <'a>{
-    pub fn new(items_count: usize, fp_rate: f64) -> Hybrid <'a> {
+impl<'a> Hybrid<'a> {
+    pub fn new(items_count: usize, fp_rate: f64) -> Hybrid<'a> {
         Hybrid {
             base: vec![HybridBase {
-                bloom: Bloom::new_for_fp_rate_with_seed(items_count, fp_rate, &[0u8;32]),
+                bloom: Bloom::new_for_fp_rate_with_seed(items_count, fp_rate, &[0u8; 32]),
                 bloom_size: items_count,
                 bloom_fp_rate: fp_rate,
                 set: BTreeSet::new(),
-            }]
+            }],
         }
     }
 
@@ -34,7 +34,11 @@ impl <'a> Hybrid <'a>{
         if self.base.last().unwrap().bloom_size == self.base.last().unwrap().set.len() {
             //If the last one is full, create a new one
             self.base.push(HybridBase {
-                bloom: Bloom::new_for_fp_rate_with_seed(self.base.last().unwrap().bloom_size, self.base.last().unwrap().bloom_fp_rate, &[0u8;32]),
+                bloom: Bloom::new_for_fp_rate_with_seed(
+                    self.base.last().unwrap().bloom_size,
+                    self.base.last().unwrap().bloom_fp_rate,
+                    &[0u8; 32],
+                ),
                 bloom_size: self.base.last().unwrap().bloom_size,
                 bloom_fp_rate: self.base.last().unwrap().bloom_fp_rate,
                 set: BTreeSet::new(),
@@ -46,7 +50,7 @@ impl <'a> Hybrid <'a>{
 
     pub fn contains(&self, item: &'a str) -> bool {
         //Start checking from first to last, because the first ones should have more items
-        for base in self.base.iter() { 
+        for base in self.base.iter() {
             if base.bloom.check(item) {
                 return base.set.contains(item);
             }
@@ -55,18 +59,16 @@ impl <'a> Hybrid <'a>{
     }
 
     pub fn get_item(&self, item: &'a str) -> Option<&'a str> {
-        for base in self.base.iter().rev(){
+        for base in self.base.iter().rev() {
             if base.bloom.check(item) {
                 return base.set.get(item).copied();
             }
         }
         None
     }
-    
+
     pub fn iter(&'a self) -> impl Iterator<Item = &'a &'a str> {
-        self.base
-            .iter()
-            .flat_map(|base| base.set.iter())
+        self.base.iter().flat_map(|base| base.set.iter())
     }
 
     pub fn get_iter(&self) -> impl Iterator<Item = &str> + '_ {
@@ -147,5 +149,4 @@ impl <'a> Hybrid <'a>{
         }
         len
     }
-
 }
