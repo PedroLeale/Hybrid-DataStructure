@@ -128,7 +128,7 @@ fn get_iter(c: &mut Criterion) {
 
     c.bench_function("Hybrid get_iter", |b| {
         b.iter(|| {
-            for address in hybrid.get_iter() {
+            for address in hybrid.iter() {
                 black_box(address);
             }
         })
@@ -140,30 +140,34 @@ fn h1_heuristic(c: &mut Criterion) {
     //If there is an intersection between two sets of inputs from bitcoin transactions,
     //then make an union between then, and repeat until you've checked all the inputs.
     //For this test I will simulate a starting set of inputs, and a list of transaction inputs to check.
-    //If you want to change the sizes, just change "amount" and "slices" variables, with big numbers it may take some minutes.
-    let amount = 100000;
-    let slices = 100;
+    //If you want to change the sizes, just change "amount" and "buckets" variables, with big numbers it may take some minutes.
+    //But keep in mind: Amount size should be equal to buckets * buckets, otherwise you may need to change the code in the insertion part.
+    let amount = 1000000;
+    let buckets = 1000;
 
     let addresses = create_addresses(amount, 1);
     let mut starting_set = Hybrid::new(amount, 0.01);
     let mut full_set = black_box(Vec::<Hybrid>::new());
 
-    //For this test, the starting set will have the first "slices" addresses
+    //For this test, the starting set will have the first "buckets" addresses
     //so intersection will be guaranteed and unions will happen at every iteration of the loop
 
-    for i in 0..slices {
-        starting_set.insert(&addresses[i * slices + (slices - 1)]);
+    for i in 0..buckets {
+        starting_set.insert(&addresses[i * buckets + (buckets - 1)]);
     }
 
-    for i in 0..slices {
-        let mut hybrid = Hybrid::new(slices, 0.01);
-        for j in 0..slices {
-            hybrid.insert(&addresses[i * slices + j]);
+    for i in 0..buckets {
+        let mut hybrid = Hybrid::new(buckets, 0.01);
+        for j in 0..buckets {
+            hybrid.insert(&addresses[i * buckets + j]);
         }
         full_set.push(hybrid);
     }
-
-    c.bench_function("H1 Heuristic", |b| {
+    let mut group = c.benchmark_group("H1 Heuristic");
+    //Only 10 samples because this tests take quite a long time, you can change it if you want
+    //but if you make it 100 samples I recommend you to change the amount and buckets variables
+    group.sample_size(10);
+    group.bench_function("H1 Heuristic Hybrid", |b| {
         b.iter(|| {
             for set in &full_set {
                 if starting_set.has_intersection(&set) {
@@ -174,28 +178,29 @@ fn h1_heuristic(c: &mut Criterion) {
     });
 }
 
-fn h1_heuristic_btreeset(c: &mut Criterion){
+fn h1_heuristic_btreeset(c: &mut Criterion) {
     //Same as h1_heuristic but using a BTreeSet instead of a Hybrid
-    let amount = 100000;
-    let slices = 100;
+    let amount = 1000000;
+    let buckets = 1000;
 
     let addresses = create_addresses(amount, 1);
     let mut starting_set: std::collections::BTreeSet<&str> = std::collections::BTreeSet::new();
     let mut full_set = black_box(Vec::<std::collections::BTreeSet<&str>>::new());
 
-    for i in 0..slices {
-        starting_set.insert(&addresses[i * slices + (slices - 1)]);
+    for i in 0..buckets {
+        starting_set.insert(&addresses[i * buckets + (buckets - 1)]);
     }
 
-    for i in 0..slices {
+    for i in 0..buckets {
         let mut set: std::collections::BTreeSet<&str> = std::collections::BTreeSet::new();
-        for j in 0..slices {
-            set.insert(&addresses[i * slices + j]);
+        for j in 0..buckets {
+            set.insert(&addresses[i * buckets + j]);
         }
         full_set.push(set);
     }
-
-    c.bench_function("H1 Heuristic BTreeSet", |b| {
+    let mut group = c.benchmark_group("H1 Heuristic");
+    group.sample_size(10);
+    group.bench_function("H1 Heuristic BTreeSet", |b| {
         b.iter(|| {
             for set in &full_set {
                 if starting_set.intersection(&set).count() > 0 {

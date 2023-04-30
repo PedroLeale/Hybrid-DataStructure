@@ -6,12 +6,15 @@ This project is also part of my scientific initiation at UFU (Federal university
 
 ## Benchmarks and tests
 "cargo bench" for benchmarks and "cargo test" for tests.
+With the current data structure, Hybrid beats using only a BTreeSet for H1 Heuristic by roughly 100 milliseconds in this test.
+But it wins with one condition, since BloomFilters have a fixed maximum size, if the structure needs to allocate more it creates another one and pushes it to the list,
+if it needs to do it, it looses. I recommend creating big BloomFilters, using Hybrid::new(items_count, fp_rate) to avoid this issue.
 
 ## Details about the project
 
 It is a hybrid data structure that contains a BtreeSet and a BloomFilter.
 The BloomFilter's goal is to optimize "contains" methods without compromising insertions.<br />
-The current code is still on the optimization process but is relatively fast.<br />
+The current code is still on the optimization process but is relatively faster than just using a BTreeSet in certain cases.<br />
 
 ## Union functions
 Last version's union function just pushed the other data structure to the end of the list, this thing was causing some mutability and lifetime problems, it is possible to circle around it but for this new version I've changed the insertion function so it checks for duplicates and union basically inserts other into self. I did this to avoid this
@@ -27,4 +30,4 @@ mutability and lifetimes issues until I discover how to properly deal with it.<b
 * I tried to make it generic, not only for strings, but I don't know why it lost 40% performance since typing should be dealt with in compile time, not run time.<br />
 * Also tried to make only one TreeSet and a list of BloomFilters, but it ended up consuming so much memory that it crashes when I test it with millions of strings.
 The goal of this was to deal with duplicates from unions.<br />
-* Currently using the same seed for all bloomfilters, with the hope to improve performance but haven't seen something relevant.
+* Currently using the same seed for all bloomfilters, with the hope to improve performance but haven't seen anything relevant.

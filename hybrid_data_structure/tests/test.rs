@@ -109,17 +109,17 @@ mod tests {
     }
 
     #[test]
-    fn btreeset_union(){
+    fn btreeset_union() {
         let amount = 10000;
         let slices = 100;
         let addresses = create_addresses(amount, 1);
         let mut starting_set: std::collections::BTreeSet<&str> = std::collections::BTreeSet::new();
         let mut full_set = Vec::<std::collections::BTreeSet<&str>>::new();
-    
+
         for i in 0..slices {
             starting_set.insert(&addresses[i * slices + (slices - 1)]);
         }
-    
+
         for i in 0..slices {
             let mut set: std::collections::BTreeSet<&str> = std::collections::BTreeSet::new();
             for j in 0..slices {
@@ -137,10 +137,10 @@ mod tests {
         }
 
         assert_eq!(starting_set.len(), amount);
-
     }
 
-    const BASE58_ALPHABET: &'static str = &"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    const BASE58_ALPHABET: &'static str =
+        &"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
     fn to_base58_dictionary(value: Vec<u8>) -> String {
         let mut result = String::new();
@@ -149,7 +149,7 @@ mod tests {
         }
         result
     }
-    
+
     fn create_addresses(amount: usize, seed: u64) -> Vec<String> {
         let mut addresses = Vec::new();
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
@@ -157,13 +157,13 @@ mod tests {
             let mut temp_vec = Vec::new();
             let mut _temp_string = String::new();
             let rng_num: f64 = rng.gen();
-    
+
             if rng_num <= 0.5f64 {
                 _temp_string = "1".to_string();
             } else {
                 _temp_string = "3".to_string();
             }
-    
+
             for _ in 0..33 {
                 let random_character = rng.gen_range(0..58);
                 temp_vec.push(random_character);
@@ -173,7 +173,4 @@ mod tests {
         }
         addresses
     }
-
 }
-
-
