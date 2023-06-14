@@ -51,8 +51,10 @@ impl<'a> Hybrid<'a> {
     pub fn contains(&self, item: &'a str) -> bool {
         //Start checking from first to last, because the first ones should have more items
         for base in self.base.iter() {
-            if base.bloom.check(item) {
-                return base.set.contains(item);
+            if base.bloom.check(item) && base.set.contains(item){
+                return true;
+            } else {
+                continue;
             }
         }
         false
